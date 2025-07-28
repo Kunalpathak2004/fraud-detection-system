@@ -93,3 +93,32 @@ plt.ylabel("Transactional Amount")
 plt.grid(True)
 plt.show()
 print("A boxplot of Transactional Amount by Class is showcased\n")
+
+# 3 Pie Chart of Fraudulent vs Non-Fraudulent Transactions
+class_count = df_large_realistic["class"].value_counts()
+plt.figure(figsize=(10,8))
+plt.pie(
+    class_count.values,
+    labels=["Non-Fraudulent","Fraudulent"],
+    autopct="%1.1f%%",
+    colors=["#9488d1", "#f8f5d1"],
+    startangle=90,
+    shadow=True
+    )
+plt.title("Non-Fraudulent vs Fraudulent Transactions")
+plt.grid(True)
+plt.show()
+print("Showcasing a pie chart of Non-Fraudulent vs Fradulent Transactions")
+
+# 4 FacetGrid of Fraudulent Transactions
+fraudulent_transactions = df_large_realistic[df_large_realistic["class"]==1].copy()
+fraudulent_transactions["day"] = pd.to_datetime(fraudulent_transactions["timestamp"]).dt.day_name()
+fraudulent_transactions["amount-bin"] = pd.qcut(fraudulent_transactions["amount"], q=3,labels=["Low","Medium","High"] )
+fraudulent_transactions["y_jitter"] = fraudulent_transactions["transactionID"] + np.random.uniform(-500, 500, size=len(fraudulent_transactions)) ##adding this line because locations and transactionID were getting overwritten 
+graph = sns.FacetGrid(data=fraudulent_transactions,row="locations",col="amount-bin",hue="day",height=3,margin_titles=True)
+graph.map(plt.scatter,"amount","transactionID",edgecolor = "w",alpha=0.6,s=40).add_legend()
+plt.subplots_adjust(top=0.9,hspace=0.8,wspace=0.7)
+graph.fig.suptitle("Scatterplot of Fraudulent Transactions by Loactions and Amount-Bin",fontsize = 16)
+plt.grid(True)
+plt.show()
+print("Showcasing a scatterplot of Fraudulent Transactions\n")
