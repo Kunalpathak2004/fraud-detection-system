@@ -132,3 +132,21 @@ print("Number of fraud transaction in the data: ")
 print(fraud_transaction.value_counts())
 
 # 5 Correlation matrix for fraudulent transactions
+plt.figure(figsize=(10,10))
+fraud_corr = fraudulent_transactions.select_dtypes(include="number").corr()
+sns.heatmap(corr, cmap="coolwarm", annot=True, fmt=".2f")
+plt.title("Correlational Matrix Of Fraudulent Transactions (Numeic Values Only)")
+plt.grid(True)
+plt.show()
+print("Correlational Matrix of Fradulent Transaction showcased\n")
+
+# 6 Line plot to show fraud trend over time
+fraud_counts = fraudulent_transactions.groupby(fraudulent_transactions["timestamp"].astype(int)//3600).size()
+plt.figure(figsize=(14,7))
+plt.plot(fraud_counts.index,fraud_counts.values,linewidth = 2,marker = 'o')
+plt.title("Fraud trends over time")
+plt.xlabel("Time (Hours)")
+plt.ylabel("Number of Fraud Transactions")
+plt.grid(True)
+plt.show()
+print("Line chart of Fraud Trends over time\n")
