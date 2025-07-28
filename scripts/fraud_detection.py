@@ -122,3 +122,13 @@ graph.fig.suptitle("Scatterplot of Fraudulent Transactions by Loactions and Amou
 plt.grid(True)
 plt.show()
 print("Showcasing a scatterplot of Fraudulent Transactions\n")
+
+# displaying data related to fraudulent transactions
+fraudulent_transactions = df_large_realistic[df_large_realistic["class"]==1]
+print(fraudulent_transactions)
+# displaying the number of fraudulent transaction in the whole data
+fraud_transaction = df_large_realistic["class"]==1
+print("Number of fraud transaction in the data: ")
+print(fraud_transaction.value_counts())
+
+# 5 Correlation matrix for fraudulent transactions
