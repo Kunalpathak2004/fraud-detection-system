@@ -58,3 +58,10 @@ print(f"dataset colums: {df_large_realistic.columns.to_list()}")
 print(f"Dataset class distributions: ")
 print(f"Fraud detection percentage: {df_large_realistic["class"].mean()*100:.4f}")
 #  with this we have created and overviewd our dataset
+print("Missing values per column: ")
+print(df_large_realistic.isnull().sum()) ## we are checking for null values in the datset with this command
+print("Duplocated values: ")
+print(df_large_realistic.duplicated().sum()) ## we are checking for duplicate items in the dataset 
+df_large_realistic.drop_duplicates(inplace=True) ## we are dropping duplicate data if any
+print("Statistical summary of the data")
+print(df_large_realistic.describe()) ## this command will create a statistical summary of the data
