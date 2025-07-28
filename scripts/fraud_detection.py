@@ -73,3 +73,23 @@ fraud_stats = fraudulent_transactions['amount'].describe
 non_fraud_stats = non_fraudulent_transaction['amount'].describe
 print("Fraudulent Transactions: \n", fraud_stats)
 print("Non-Fraudulebt Transaction: \n",non_fraud_stats)
+
+# Now we will perform EDA: 
+# 1. Correlational matrix
+plt.figure(figsize=(15,15))
+corr = df_large_realistic.select_dtypes(include="number").corr()
+sns.heatmap(corr, cmap="coolwarm", annot=True, fmt=".2f")
+plt.title("Correlational Matrix (Numeic Values Only)")
+plt.grid(True)
+plt.show()
+print("Correlational Matrix showcased\n")
+
+# 2. Boxplot of Transactional Amount by Class
+plt.figure(figsize=(10,6))
+sns.barplot(x="class", y="amount",data=df_large_realistic)
+plt.title("Transactional Amount by Class")
+plt.xlabel("Class")
+plt.ylabel("Transactional Amount")
+plt.grid(True)
+plt.show()
+print("A boxplot of Transactional Amount by Class is showcased\n")
