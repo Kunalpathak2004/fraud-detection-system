@@ -65,3 +65,11 @@ print(df_large_realistic.duplicated().sum()) ## we are checking for duplicate it
 df_large_realistic.drop_duplicates(inplace=True) ## we are dropping duplicate data if any
 print("Statistical summary of the data")
 print(df_large_realistic.describe()) ## this command will create a statistical summary of the data
+
+# Summary for the fraud and non-fraudulent transactions
+fraudulent_transactions = df_large_realistic[df_large_realistic["class"]==1]
+non_fraudulent_transaction = df_large_realistic[df_large_realistic["class"]==0]
+fraud_stats = fraudulent_transactions['amount'].describe
+non_fraud_stats = non_fraudulent_transaction['amount'].describe
+print("Fraudulent Transactions: \n", fraud_stats)
+print("Non-Fraudulebt Transaction: \n",non_fraud_stats)
