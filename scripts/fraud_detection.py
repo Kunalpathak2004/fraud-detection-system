@@ -201,3 +201,27 @@ print(f"Total time points: {len(hourly_stats)}")
 # sample of time series data (showing top columns of the time series data)
 print("\nHourly Aggregated Data: ")
 print(hourly_stats.head())
+print("\n")
+
+# From all possible time series, we select the most relevant ones: (FEATURE SELECTION)
+# TRANSACTION VOLUME: amount_count (number of transactions per hour) - Helps detect unusual transaction patterns
+# FRAUD COUNT: class_sum (number of frauds per hour) -  Direct measure of fraud occurrence
+# FRAUD RATE: class_mean (percentage of frauds per hour) - Normalized fraud intensity
+# TRANSACTION VALUE: amount_mean (average transaction amount per hour) -  Detects unusual spending patterns
+# These 4 time series capture different aspects of fraudulent behavior!
+
+print("SELECTING TIME SERIES FOR ANALYSIS: ")
+print("="*50)
+key_series = {
+    "Transaction_Count" : hourly_stats["amount_count"],
+    "Fraud_Count" : hourly_stats["class_sum"],
+    "Fraud_Rate" : hourly_stats["class_mean"],
+    "Avg_Amount" : hourly_stats["amount_mean"]
+}
+for name,series in key_series.items(): ## series here refers to items from hourly_stats
+    print(f"\n {name}")
+    print(f"Source: {"Amount Column" if "Amount" in name or "Transaction" in name  else "Class Column" }")
+    print(f"Aggregation: {"Count" if "Count" in name else "Sum" if "Sum" in str(series.name) else "Mean"}")
+    print(f"Length of Series: {len(series)}")
+    print(f"Range: {series.min():.4f} to {series.max():.4f}")
+    print(f"Non-zero periods: {(series > 0).sum()} out of {len(series)}\n")
