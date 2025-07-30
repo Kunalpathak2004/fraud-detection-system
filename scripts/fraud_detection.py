@@ -141,6 +141,7 @@ plt.show()
 print("Correlational Matrix of Fradulent Transaction showcased\n")
 
 # 6 Line plot to show fraud trend over time
+fraudulent_transactions = df_large_realistic[df_large_realistic["class"]==1].copy()
 fraudulent_transactions["timestamp"] = pd.to_datetime(fraudulent_transactions["timestamp"])
 fraudulent_transactions["hour"] = fraudulent_transactions["timestamp"].dt.hour
 fraud_counts = fraudulent_transactions.groupby(fraudulent_transactions["hour"]).size()
@@ -152,3 +153,28 @@ plt.ylabel("Number of Fraud Transactions")
 plt.grid(True)
 plt.show()
 print("Line chart of Fraud Trends over time\n")
+
+# 7 Distributing fraud and non-fraud transactions based on amount
+fig,ax = plt.subplots(1,2,figsize=(18,8)) ## we will be using the variables created as fraudulent_transactions and non_fraudulent_transaction
+fig.suptitle("Fraudulent and Non-fraudulent transactions with respect to amount")
+sns.kdeplot(non_fraudulent_transaction["amount"],label="Amount",ax=ax[0])
+sns.kdeplot(fraudulent_transactions["amount"],label="Fraud-Amount",ax=ax[1])
+plt.grid(True)
+plt.show()
+print("THe distribution of Fraud and Non-Fraud transactions over the amount\n")
+
+# conveting time to date time
+print(f"Original time column sample: {df_large_realistic["timestamp"].head()}")
+df_large_realistic["datetime"] = pd.to_datetime(df_large_realistic["timestamp"],unit="s") ## here we convert timestamp into datetime and unit is kept as seconds
+df_large_realistic = df_large_realistic.sort_values("datetime").reset_index(drop=True) ## here we sort the datetime values
+df_large_realistic = df_large_realistic.drop("timestamp", axis=1) ## here we drop previous timestamp values
+
+print(f"Timestamp range: {df_large_realistic["datetime"].min()} to {df_large_realistic["datetime"].max()}") ##here we are printing the range of time
+duration = df_large_realistic["datetime"].max()- df_large_realistic["datetime"].min() ## here we calculate the total duration by doing max-datetime - min-datetime and conerting it into days
+print(f"Total Duration: {duration.days} days") 
+
+# IMPORTANT STEP : we need to convert individual transactions into time series
+# since individiual transactions cannot directly go to ARIMA , because ARIMA needs a sequential time-series data
+# so now we use feature engineering
+# we will create following features :From Amount column: sum, mean, std, count, max per time window
+                                     # From Class column: sum (fraud count), mean (fraud rate) per time window
