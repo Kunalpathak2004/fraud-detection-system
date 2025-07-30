@@ -171,10 +171,33 @@ df_large_realistic = df_large_realistic.drop("timestamp", axis=1) ## here we dro
 
 print(f"Timestamp range: {df_large_realistic["datetime"].min()} to {df_large_realistic["datetime"].max()}") ##here we are printing the range of time
 duration = df_large_realistic["datetime"].max()- df_large_realistic["datetime"].min() ## here we calculate the total duration by doing max-datetime - min-datetime and conerting it into days
-print(f"Total Duration: {duration.days} days") 
+print(f"Total Duration: {duration.days} days\n") 
 
 # IMPORTANT STEP : we need to convert individual transactions into time series
 # since individiual transactions cannot directly go to ARIMA , because ARIMA needs a sequential time-series data
 # so now we use feature engineering
 # we will create following features :From Amount column: sum, mean, std, count, max per time window
                                      # From Class column: sum (fraud count), mean (fraud rate) per time window
+
+print("FEATURE ENGINEERING: Creating Time Series")
+print("="*50)
+# set datetime as index for time series analysis
+df_large_realistic_ts = df_large_realistic.set_index("datetime")
+# CREATE HOURLY AGGREGATION - this is our time series frequency
+print("Creating hourly time series features.........")
+hourly_stats = df_large_realistic_ts.resample("1h").agg({
+        "amount" : ["sum", "mean", "std", "count", "max", "min"],
+        "class" : ["sum", "mean", "count"]
+}).round(4)
+# flatten the column names for making it easy
+hourly_stats.columns = ["_".join(col).strip() if isinstance(col,tuple) else col for col in hourly_stats.columns] ## this line flatten multi-index colums like "amount","sum" into single strings like"amount_sum" and strip make sures no spaces are remained
+hourly_stats = hourly_stats.fillna(0) ##filled all na/null values with 0
+print(f"Time Series shape: {hourly_stats.shape}")
+print("Time series colums created: ")
+for col in hourly_stats.columns:
+    print(f" -{col}") ##prints all the columns in hourly_stats
+print(f"Time Series Date Range: {hourly_stats.index.min()} to {hourly_stats.index.max()}")
+print(f"Total time points: {len(hourly_stats)}")
+# sample of time series data (showing top columns of the time series data)
+print("\nHourly Aggregated Data: ")
+print(hourly_stats.head())
