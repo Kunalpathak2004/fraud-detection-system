@@ -141,7 +141,9 @@ plt.show()
 print("Correlational Matrix of Fradulent Transaction showcased\n")
 
 # 6 Line plot to show fraud trend over time
-fraud_counts = fraudulent_transactions.groupby(fraudulent_transactions["timestamp"].astype(int)//3600).size()
+fraudulent_transactions["timestamp"] = pd.to_datetime(fraudulent_transactions["timestamp"])
+fraudulent_transactions["hour"] = fraudulent_transactions["timestamp"].dt.hour
+fraud_counts = fraudulent_transactions.groupby(fraudulent_transactions["hour"]).size()
 plt.figure(figsize=(14,7))
 plt.plot(fraud_counts.index,fraud_counts.values,linewidth = 2,marker = 'o')
 plt.title("Fraud trends over time")
