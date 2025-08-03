@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from faker import Faker
 import matplotlib.pyplot as plt
 import seaborn as sns
+from statsmodels.tsa.seasonal import seasonal_decompose
 
 num_of_data = 50000
 fraud_ratio = 0.01
@@ -260,5 +261,67 @@ print("- Look for obvious trends (increasing/decreasing over time)")
 print("- Notice any cyclical patterns (daily/weekly cycles)")
 print("- Identify periods with unusual activity")
 print("- Check for missing data or zero periods")
+print("\n")
 
-# 
+# now we will do time series decomposition
+# time series decomposition tells us about 
+# ternds,seasonality,residual and for fraud_detection we will decompose fraud_rate
+print("Decomposing Time Series Data")
+print("="*50)
+print("\n")
+
+decomposition_results = {}
+for name,series in key_series.items():
+    print(f"Decomposing {name}")
+# we are cleaning series from infinite and null items
+    series_clean = series.replace([np.inf,-np.inf],np.nan).ffill().fillna(0)
+    try:
+        decomposition = seasonal_decompose(series_clean,model="additive",period=24)
+        decomposition_results[name] = decomposition
+
+        trend_var = np.var(decomposition.trend.dropna())
+        seasonal_var = np.var(decomposition.seasonal)
+        residual_var = np.var(decomposition.resid.dropna())
+        total_var = trend_var + seasonal_var + residual_var
+
+        print(f"Trend Variance: {trend_var:.6f} ({trend_var/total_var*100:.1f}%)")
+        print(f"Seasonal Variance: {seasonal_var:.6f} ({seasonal_var/total_var*100:.1f}%)")
+        print(f"Residual Variance: {residual_var:.6f} ({residual_var/total_var*100:.1f}%)")
+    except Exception as e:
+        print(f"Could not decompose {name} : {e}")
+
+# now we take fraud_rate into decomposition it is very essential for fraud_detection
+if "Fraud_Rate" in decomposition_results:
+    print("\n Visualizing decomposition for Fraud Rate: ")
+
+    decomp = decomposition_results["Fraud_Rate"]
+    fig ,axes = plt.subplots(4,1,figsize=(18,14))
+    # original series data
+    axes[0].plot(decomp.observed.index,decomp.observed,color="red",alpha=0.8)
+    axes[0].set_title("Original Fraud Rate time series",fontweight="bold")
+    axes[0].grid(True,alpha=0.3)
+
+    # trend series data
+    axes[1].plot(decomp.trend.index,decomp.trend,color="blue",alpha=0.8)
+    axes[1].set_title("Trend Of Fraud Rate Time Seies Data",fontweight="bold")
+    axes[1].grid(True,alpha=0.3) 
+
+    # seasonal series data
+    axes[2].plot(decomp.seasonal.index,decomp.seasonal,color="green",alpha=0.8)
+    axes[2].set_title("Seasonal Fraud Rate Time Series Data",fontweight="bold")
+    axes[2].grid(True,alpha=0.3)
+
+    # residual series data
+    axes[3].plot(decomp.resid.index,decomp.resid,color="blue",alpha=0.8)
+    axes[3].set_title("Residual Fraud Rate time series",fontweight="bold")
+    axes[3].grid(True,alpha=0.3)
+
+    plt.tight_layout()
+    plt.grid(True)
+    plt.show()
+
+
+
+
+
+
