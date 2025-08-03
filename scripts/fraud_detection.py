@@ -225,3 +225,40 @@ for name,series in key_series.items(): ## series here refers to items from hourl
     print(f"Length of Series: {len(series)}")
     print(f"Range: {series.min():.4f} to {series.max():.4f}")
     print(f"Non-zero periods: {(series > 0).sum()} out of {len(series)}\n")
+
+# before doing analysis we will visualize our raw time series data to check
+# Overall trends and patterns
+# Seasonality (daily/weekly patterns)
+# Outliers and anomalies
+# Data quality issues
+print("Visualization of Raw time series data")
+print("="*50)
+print("\n")
+
+fig,axes = plt.subplots(2,2, figsize=(15,7)) ## axes is a 2D numpy array eg: {[a,b
+                                                                            #    c,d  ]}
+axes = axes.ravel() ## ravel turns this into [a,b,c,d]
+colors = ["red","blue","green","brown"]
+for idx,(name,series) in enumerate(key_series.items()):
+    axes[idx].plot(series.index,series.values,color=colors[idx],alpha=0.7,marker="o")
+    axes[idx].set_title(f"{name} Over Time (Raw Data)",fontweight="bold",fontsize=12)
+    axes[idx].set_ylabel("Value")
+    axes[idx].grid(True,alpha=0.3)
+    axes[idx].tick_params(axis="x",rotation=45)
+    stats_text = f"Mean:{series.mean():.2f}\n Std{series.std():.2f}\n Max{series.max():.2f}" ## this code converts basic statistics to text
+    axes[idx].text(0.02,0.98,stats_text,transform=axes[idx].transAxes,
+                                     verticalalignment='top', 
+                                     bbox=dict(boxstyle='round', 
+                                     facecolor='white', alpha=0.8))
+
+plt.tight_layout()
+plt.grid(True)
+plt.show()
+
+print("Initial Observations:")
+print("- Look for obvious trends (increasing/decreasing over time)")
+print("- Notice any cyclical patterns (daily/weekly cycles)")
+print("- Identify periods with unusual activity")
+print("- Check for missing data or zero periods")
+
+# 
