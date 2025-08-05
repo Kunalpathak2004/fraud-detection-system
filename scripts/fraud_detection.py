@@ -319,9 +319,29 @@ if "Fraud_Rate" in decomposition_results:
     plt.tight_layout()
     plt.grid(True)
     plt.show()
+    print("\n")
 
+# now we analyze the trends and also visualize whether trends are increasing or decreasing over time
+trend = decomp.trend.dropna()
+plt.figure(figsize=(14,8))
+plt.plot(trend.index,trend.values,color="#4040a1",linewidth=2)
+plt.title("Trend Component Of Fraud Rate",fontsize=14,fontweight="bold")
+plt.xlabel("Time")
+plt.ylabel("Trend Value")
+plt.grid(True,alpha=0.3)
+plt.scatter(trend.index[0],trend.iloc[0],color="#618685",label="Start" ) ## this denotes the start of the trend
+plt.scatter(trend.index[1],trend.iloc[-1],color="#bc5a45",label="End") ## this denotes the end of the trend
+plt.annotate("Trend Increasing" if trend.iloc[-1] > trend.iloc[0] else "Trend Decreasing",
+             xy=(trend.index[len(trend)//2],trend.max()),
+             xytext=(trend.index[len(trend)//2],trend.max() * 0.9),
+             arrowprops=dict(facecolor="black",arrowstyle="->"),
+             fontsize=10)  ## this will annonate an arrow showcasing the increase and decrease of the trend
+plt.legend()
+plt.tight_layout()
+plt.show()
+print("Visualized the trend component and increase and decrease of trends in the fraud rate\n")
 
-
-
-
-
+# now we will identify anomalies in the fraud rate and visualize it
+residual = decomp.resid.dropna()
+threshold = residual.std()*3
+anomalies = 
