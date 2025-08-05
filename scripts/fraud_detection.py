@@ -319,7 +319,7 @@ if "Fraud_Rate" in decomposition_results:
     plt.tight_layout()
     plt.grid(True)
     plt.show()
-    print("\n")
+    print("\n") ## here we identify trends,seasonality,residuals and original fraud rate but not study it individually
 
 # now we analyze the trends and also visualize whether trends are increasing or decreasing over time
 trend = decomp.trend.dropna()
@@ -339,9 +339,28 @@ plt.annotate("Trend Increasing" if trend.iloc[-1] > trend.iloc[0] else "Trend De
 plt.legend()
 plt.tight_layout()
 plt.show()
-print("Visualized the trend component and increase and decrease of trends in the fraud rate\n")
+print("Visualized the trend component and increase and decrease of trends in the fraud rate\n") ##from this we see longtime patterns in fraud 
 
 # now we will identify anomalies in the fraud rate and visualize it
 residual = decomp.resid.dropna()
 threshold = residual.std()*3
-anomalies = 
+anomalies = residual[abs(residual) > threshold] ## if the value of the residual comes greaer than the threshold value it is considered an anomaly
+print(f"Anomalies: {anomalies}")
+# we have identified anomalies now we visualize it
+plt.figure(figsize=(16,10))
+plt.plot(residual.index,residual.values,label="residuals",color="gray",alpha=0.6)
+# we will show anomalies with red dots
+plt.scatter(anomalies.index,anomalies.values,label="anomalies",color="red",zorder=5)
+# now we will add positive and  negative threshold lines
+plt.axhline(threshold,color="blue",linewidth=2,linestyle="--",label="Positive Threshold")
+plt.axhline(-threshold,color="blue",linewidth=2,linestyle="--",label="Negative Threshold")
+# now we plot original fraud rate to see how anomalies effect the fraud rate
+plt.plot(decomp.observed.dropna().index,decomp.observed.dropna().values,label="Original Fraud Rate Series",color="black",alpha=0.3)
+plt.title("Residual and Detected Anomalies",fontsize=16,fontweight="bold")
+plt.xlabel("Time")
+plt.ylabel("Residual Values")
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+print("Showcased the residuals and anomalies in the fraud rate\n") ## with this we identify sudden spike in fraud rate
